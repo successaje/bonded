@@ -50,6 +50,15 @@ forge build
 forge test        # 31 tests: lifecycle, slash paths, disputes, pool math, guards
 ```
 
+Run the dashboard (live simulation of the protocol; chain reads land with the
+testnet deployment):
+
+```bash
+cd web
+npm install
+npm run dev       # http://localhost:5175
+```
+
 Deploy to Arc testnet (fund a burner key at https://faucet.circle.com):
 
 ```bash
@@ -113,5 +122,5 @@ same USDC pool seen at 18 decimals — never add the two views.
 ## Hackathon
 
 Built for **Build on Arc** (Encode × Circle, July–Aug 2026), entering both
-tracks: Agentic Economy and DeFi. Status: contracts + full test suite ✅
-(checkpoint 2) · agents ⏳ · dashboard ⏳ · Arc testnet deployment ⏳.
+tracks: Agentic Economy and DeFi. Status: contracts + full test suite ✅ ·
+animated dashboard on simulated data ✅ · agents ⏳ · Arc testnet deployment ⏳.
