@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef } from "react";
 import { Countdown } from "../components/Countdown";
-import { Avatar, StateBadge } from "../components/ui";
+import { Avatar, agentTone, EmptyState, StateBadge } from "../components/ui";
 import { useWorld } from "../data/source";
 import type { Agent, Job } from "../data/types";
 import { fmtUsd, shortAddr } from "../lib/format";
@@ -12,16 +12,16 @@ const JobCard = forwardRef<HTMLDivElement, { job: Job; agent: Agent }>(function 
       ref={ref}
       layout
       className="card job-card"
-      initial={{ opacity: 0, y: -14, scale: 0.98 }}
+      initial={{ opacity: 0, y: -12, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
+      exit={{ opacity: 0, scale: 0.97 }}
       transition={{ type: "spring", stiffness: 360, damping: 32 }}
     >
       <div className="job-head">
-        <Avatar initial={agent.initial} size={30} />
+        <Avatar initial={agent.initial} tone={agentTone(agent.id)} size={30} />
         <div>
           <div className="job-agent">{agent.name}</div>
-          <div style={{ fontSize: 11.5, color: "var(--text-3)" }}>job #{job.id}</div>
+          <div className="job-id">job #{job.id}</div>
         </div>
         <div className="job-price mono">{fmtUsd(job.price, { cents: false })}</div>
       </div>
@@ -33,11 +33,7 @@ const JobCard = forwardRef<HTMLDivElement, { job: Job; agent: Agent }>(function 
       </div>
 
       {job.state === "funded" && (
-        <Countdown
-          deadline={job.deliveryDeadline}
-          total={job.deliveryDeadline - job.fundedAt}
-          label="Delivery deadline"
-        />
+        <Countdown deadline={job.deliveryDeadline} total={job.deliveryDeadline - job.fundedAt} label="Delivery deadline" />
       )}
 
       {(job.state === "delivered" || job.state === "disputed") && job.disputeDeadline && job.deliveredAt && (
@@ -77,19 +73,35 @@ const JobCard = forwardRef<HTMLDivElement, { job: Job; agent: Agent }>(function 
   );
 });
 
-function Column({ title, icon, jobs, agents }: { title: string; icon: string; jobs: Job[]; agents: Map<string, Agent> }) {
+function Column({
+  title,
+  icon,
+  jobs,
+  agents,
+  empty,
+}: {
+  title: string;
+  icon: string;
+  jobs: Job[];
+  agents: Map<string, Agent>;
+  empty: { title: string; sub: string };
+}) {
   return (
     <div>
       <div className="col-title">
         <span aria-hidden="true">{icon}</span> {title} <span className="col-count">{jobs.length}</span>
       </div>
       <motion.div className="job-col" layout>
-        <AnimatePresence initial={false} mode="popLayout">
-          {jobs.map((j) => {
-            const agent = agents.get(j.agentId);
-            return agent ? <JobCard key={j.id} job={j} agent={agent} /> : null;
-          })}
-        </AnimatePresence>
+        {jobs.length === 0 ? (
+          <EmptyState icon={icon} title={empty.title} sub={empty.sub} />
+        ) : (
+          <AnimatePresence initial={false} mode="popLayout">
+            {jobs.map((j) => {
+              const agent = agents.get(j.agentId);
+              return agent ? <JobCard key={j.id} job={j} agent={agent} /> : null;
+            })}
+          </AnimatePresence>
+        )}
       </motion.div>
     </div>
   );
@@ -108,9 +120,9 @@ export function Jobs() {
 
   return (
     <div className="jobs-board">
-      <Column title="In progress" icon="◷" jobs={funded} agents={agents} />
-      <Column title="Acceptance" icon="◔" jobs={awaiting} agents={agents} />
-      <Column title="Settled" icon="⚡" jobs={settled} agents={agents} />
+      <Column title="In progress" icon="◷" jobs={funded} agents={agents} empty={{ title: "No jobs in flight", sub: "New hires appear here first" }} />
+      <Column title="Acceptance" icon="◔" jobs={awaiting} agents={agents} empty={{ title: "Nothing awaiting review", sub: "Delivered work waits out its window here" }} />
+      <Column title="Settled" icon="⚡" jobs={settled} agents={agents} empty={{ title: "No settlements yet", sub: "Passed and slashed jobs land here" }} />
     </div>
   );
 }

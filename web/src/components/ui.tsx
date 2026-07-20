@@ -4,12 +4,23 @@ import type { Job } from "../data/types";
 import { fmtUsd, pct } from "../lib/format";
 import { Spark } from "./charts";
 
-type Tone = "green" | "red" | "amber" | "blue" | "gray";
+type Tone = "green" | "red" | "amber" | "accent" | "gray";
+type AvTone = "blue" | "violet" | "teal" | "amber";
+
+const AGENT_TONE: Record<string, AvTone> = {
+  leak: "blue",
+  scribe: "violet",
+  quant: "teal",
+  flaky: "amber",
+};
+export function agentTone(id: string): AvTone {
+  return AGENT_TONE[id] ?? "blue";
+}
 
 export function Badge({ tone, icon, children, glow }: { tone: Tone; icon?: string; children: ReactNode; glow?: boolean }) {
   return (
     <span className={`badge ${tone}${glow ? " bonded-badge" : ""}`}>
-      {icon && <span aria-hidden="true">{icon}</span>}
+      {icon && <span className="bi" aria-hidden="true">{icon}</span>}
       {children}
     </span>
   );
@@ -27,9 +38,9 @@ export function BondedBadge() {
 export function StateBadge({ job }: { job: Job }) {
   switch (job.state) {
     case "funded":
-      return <Badge tone="blue" icon="◷">In progress</Badge>;
+      return <Badge tone="accent" icon="●">In progress</Badge>;
     case "delivered":
-      return <Badge tone="amber" icon="◔">Acceptance window</Badge>;
+      return <Badge tone="amber" icon="●">Acceptance window</Badge>;
     case "disputed":
       return <Badge tone="amber" icon="⚖">Disputed</Badge>;
     case "passed":
@@ -39,31 +50,43 @@ export function StateBadge({ job }: { job: Job }) {
   }
 }
 
-export function Avatar({ initial, size = 42 }: { initial: string; size?: number }) {
+export function Avatar({ initial, tone, size = 42 }: { initial: string; tone: AvTone; size?: number }) {
   return (
-    <div className="avatar" style={{ width: size, height: size, fontSize: size * 0.38 }}>
+    <div className={`avatar av-${tone}`} style={{ width: size, height: size, fontSize: size * 0.4 }}>
       {initial}
     </div>
   );
 }
 
-export function StatCard({
+export function EmptyState({ icon, title, sub }: { icon: string; title: string; sub?: string }) {
+  return (
+    <div className="empty">
+      <div className="em-icon" aria-hidden="true">{icon}</div>
+      <div className="em-title">{title}</div>
+      {sub && <div className="em-sub">{sub}</div>}
+    </div>
+  );
+}
+
+export function StatTile({
   label,
   value,
   sub,
   spark,
+  delay = 0,
 }: {
   label: string;
   value: ReactNode;
   sub?: ReactNode;
   spark?: number[];
+  delay?: number;
 }) {
   return (
     <motion.div
       className="card hoverable"
-      initial={{ opacity: 0, y: 14 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.42, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="stat-label">{label}</div>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 10 }}>
@@ -82,11 +105,15 @@ export function BondBar({ staked, locked }: { staked: number; locked: number }) 
     <div>
       <div className="bondbar-label">
         <span>
-          Bond <b style={{ color: "var(--text)" }}>{fmtUsd(staked, { cents: false })}</b>
+          Bond <b>{fmtUsd(staked, { cents: false })}</b>
         </span>
-        <span>{locked > 0 ? `${fmtUsd(locked, { cents: false })} locked in jobs` : "nothing locked"}</span>
+        <span>{locked > 0 ? `${fmtUsd(locked, { cents: false })} locked` : "fully available"}</span>
       </div>
-      <div className="bondbar" role="img" aria-label={`Bond ${fmtUsd(staked)}, ${fmtUsd(locked)} locked, ${fmtUsd(available)} available`}>
+      <div
+        className="bondbar"
+        role="img"
+        aria-label={`Bond ${fmtUsd(staked)}, ${fmtUsd(locked)} locked, ${fmtUsd(available)} available`}
+      >
         {locked > 0 && (
           <motion.div
             className="seg"
@@ -97,7 +124,7 @@ export function BondBar({ staked, locked }: { staked: number; locked: number }) 
         )}
         <motion.div
           className="seg"
-          style={{ background: "var(--blue)" }}
+          style={{ background: "rgba(140,160,200,0.4)" }}
           animate={{ width: `${100 - lockedPct}%` }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         />
@@ -106,7 +133,7 @@ export function BondBar({ staked, locked }: { staked: number; locked: number }) 
   );
 }
 
-export function PassRing({ passed, jobs, size = 74 }: { passed: number; jobs: number; size?: number }) {
+export function PassRing({ passed, jobs, size = 78 }: { passed: number; jobs: number; size?: number }) {
   const rate = jobs > 0 ? pct(passed, jobs) : 0;
   const r = size / 2 - 5;
   const c = 2 * Math.PI * r;
@@ -114,7 +141,7 @@ export function PassRing({ passed, jobs, size = 74 }: { passed: number; jobs: nu
   return (
     <div style={{ position: "relative", width: size, height: size, flex: "none" }}>
       <svg width={size} height={size} role="img" aria-label={`${Math.round(rate)}% pass rate over ${jobs} jobs`}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(146,166,205,0.14)" strokeWidth="6" />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(140,160,200,0.13)" strokeWidth="6" />
         <motion.circle
           cx={size / 2}
           cy={size / 2}
@@ -130,21 +157,12 @@ export function PassRing({ passed, jobs, size = 74 }: { passed: number; jobs: nu
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         />
       </svg>
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "grid",
-          placeItems: "center",
-          textAlign: "center",
-          lineHeight: 1.05,
-        }}
-      >
+      <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center", lineHeight: 1.05 }}>
         <div>
-          <div className="mono" style={{ fontWeight: 680, fontSize: size * 0.24 }}>
+          <div className="mono" style={{ fontWeight: 700, fontSize: size * 0.25 }}>
             {Math.round(rate)}%
           </div>
-          <div style={{ fontSize: 10, color: "var(--text-3)", fontWeight: 600 }}>pass</div>
+          <div style={{ fontSize: 10, color: "var(--text-4)", fontWeight: 600 }}>pass</div>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
+import { motion, MotionConfig } from "framer-motion";
 import { useState } from "react";
 import { Agents } from "./views/Agents";
 import { Jobs } from "./views/Jobs";
@@ -46,26 +46,23 @@ export default function App() {
             <span className="pill">
               <span className="live-dot" /> Arc Testnet
             </span>
-            <span className="pill" title="Live chain reads land with the testnet deployment">
+            <span className="pill muted" title="Live chain reads land with the testnet deployment">
               Simulated preview
             </span>
           </div>
         </header>
 
-        <AnimatePresence mode="wait">
-          <motion.main
-            key={tab}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {tab === "overview" && <Overview onNavigate={(t) => setTab(t as TabId)} />}
-            {tab === "agents" && <Agents />}
-            {tab === "jobs" && <Jobs />}
-            {tab === "pool" && <Pool />}
-          </motion.main>
-        </AnimatePresence>
+        <motion.main
+          key={tab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {tab === "overview" && <Overview onNavigate={(t) => setTab(t as TabId)} />}
+          {tab === "agents" && <Agents />}
+          {tab === "jobs" && <Jobs />}
+          {tab === "pool" && <Pool />}
+        </motion.main>
       </div>
     </MotionConfig>
   );
