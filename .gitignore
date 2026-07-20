@@ -1,0 +1,16 @@
+# env / secrets — never commit keys
+.env
+.env.*
+!.env.example
+
+# foundry
+contracts/cache/
+contracts/out/
+contracts/broadcast/
+
+# node
+node_modules/
+dist/
+
+# os
+.DS_Store
