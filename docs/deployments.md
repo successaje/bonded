@@ -2,18 +2,21 @@
 
 ## Arc Testnet (chain id `5042002`)
 
-Deployed 2026-07-21. Explorer: <https://testnet.arcscan.app>
+Deployed 2026-07-21. Explorer: <https://testnet.arcscan.app>.
+**All six contracts are source-verified** — click any address to read the code.
 
-| Contract | Address |
-|---|---|
-| **JobEscrow** | `0x7dc16d44789283279b28C940359011F2649897dA` |
-| **BondVault** | `0x6444f16e29Bf33a8C9da2B89E472b58Bafe41b9c` |
-| **SLARegistry** | `0x86C41594e9aDeCcf8c85ba9EEe0138C7c9E70dBc` |
-| **UnderwriterPool** | `0xC310b43748E5303F1372Ab2C9075629E0Bb4FE54` |
-| **OutcomeLog** | `0xF673F508104876c72C8724728f81d50E01649b40` |
-| **AuditChecker** | `0x7CC324d15E5fF17c43188fB63b462B9a79dA68f6` |
-| USDC (Arc native, ERC-20 view) | `0x3600000000000000000000000000000000000000` |
-| Arbiter (v1, deployer) | `0x60eF148485C2a5119fa52CA13c52E9fd98F28e87` |
+| Contract | Address | Verified |
+|---|---|---|
+| **JobEscrow** | [`0x7dc16d44…97dA`](https://testnet.arcscan.app/address/0x7dc16d44789283279b28C940359011F2649897dA?tab=contract) | ✅ |
+| **BondVault** | [`0x6444f16e…1b9c`](https://testnet.arcscan.app/address/0x6444f16e29Bf33a8C9da2B89E472b58Bafe41b9c?tab=contract) | ✅ |
+| **SLARegistry** | [`0x86C41594…0dBc`](https://testnet.arcscan.app/address/0x86C41594e9aDeCcf8c85ba9EEe0138C7c9E70dBc?tab=contract) | ✅ |
+| **UnderwriterPool** | [`0xC310b437…FE54`](https://testnet.arcscan.app/address/0xC310b43748E5303F1372Ab2C9075629E0Bb4FE54?tab=contract) | ✅ |
+| **OutcomeLog** | [`0xF673F508…9b40`](https://testnet.arcscan.app/address/0xF673F508104876c72C8724728f81d50E01649b40?tab=contract) | ✅ |
+| **AuditChecker** | [`0x7CC324d1…68f6`](https://testnet.arcscan.app/address/0x7CC324d15E5fF17c43188fB63b462B9a79dA68f6?tab=contract) | ✅ |
+| USDC (Arc native, ERC-20 view) | `0x3600000000000000000000000000000000000000` | — |
+| Arbiter (v1, deployer) | `0x60eF148485C2a5119fa52CA13c52E9fd98F28e87` | — |
+
+Compiled with solc `v0.8.26+commit.8a97fa7a`, optimizer on, 200 runs.
 
 Wiring verified on-chain: `BondVault.escrow`, `UnderwriterPool.escrow` and
 `OutcomeLog.escrow` all point at JobEscrow; JobEscrow's `vault` / `pool` /
@@ -67,6 +70,18 @@ of which $0.52 is protocol value (premium + slash), not gas.
 cd contracts
 cp .env.example .env      # add a burner PRIVATE_KEY funded at faucet.circle.com
 forge script script/Deploy.s.sol:Deploy --rpc-url arc_testnet --broadcast
+```
+
+ArcScan runs Blockscout, so verification needs no API key. Per contract:
+
+```bash
+forge verify-contract <address> src/JobEscrow.sol:JobEscrow \
+  --verifier blockscout \
+  --verifier-url https://testnet.arcscan.app/api/ \
+  --compiler-version 0.8.26 --num-of-optimizations 200 --chain-id 5042002 \
+  --constructor-args $(cast abi-encode \
+      "constructor(address,address,address,address,address,address)" \
+      $USDC $VAULT $REGISTRY $POOL $OUTCOMES $ARBITER)
 ```
 
 Never commit `.env`; `broadcast/` and `cache/` are gitignored because Foundry

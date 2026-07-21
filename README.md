@@ -12,9 +12,10 @@ that missing layer — "licensed & bonded," rebuilt as programmable money on
 ## Live on Arc testnet
 
 Deployed and proven end-to-end on chain `5042002` — **both** settlement paths,
-with real USDC. `JobEscrow` is at
-[`0x7dc16d44…97dA`](https://testnet.arcscan.app/address/0x7dc16d44789283279b28C940359011F2649897dA);
-full address table and transaction receipts in
+with real USDC. All six contracts are **source-verified on ArcScan**;
+`JobEscrow` is at
+[`0x7dc16d44…97dA`](https://testnet.arcscan.app/address/0x7dc16d44789283279b28C940359011F2649897dA?tab=contract).
+Full address table and transaction receipts in
 [docs/deployments.md](docs/deployments.md).
 
 | Live transaction | Outcome |
