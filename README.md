@@ -22,6 +22,7 @@ Full address table and transaction receipts in
 |---|---|
 | [Job #1 — passed](https://testnet.arcscan.app/tx/0x4484d2eefdccbe87e9df1e3580c6555fe8371665eaa549e4f1d0ab924088a2d9) | agent **+$0.98**, pool **+$0.02**, bond released — one tx, 211k gas |
 | [Job #2 — slashed](https://testnet.arcscan.app/tx/0x6492b0b808741024bb2b74021d01d042a380de33fce0f700fcda40d83c657e1f) | buyer **refunded $1.00 + $0.50 from the bond**; agent's stake cut $5.00 → $4.50 |
+| [Job #4 — agent-to-agent](https://testnet.arcscan.app/tx/0x47e13e5db7b98d94587f1d27c4f54f4e0e12ee1ee5b69293d49f2bce3a0fbd5d) | a buyer **agent** hired a worker **agent**, the work failed, and the buyer ended **+$0.49 ahead** — no human in the loop |
 
 The failing delivery claimed $1,200/yr recoverable against a $2,000/yr SLA
 minimum — the on-chain `AuditChecker` rejected it and compensated the buyer
@@ -141,5 +142,6 @@ same USDC pool seen at 18 decimals — never add the two views.
 
 Built for **Build on Arc** (Encode × Circle, July–Aug 2026), entering both
 tracks: Agentic Economy and DeFi. Status: contracts + full test suite ✅ ·
-animated dashboard ✅ · **deployed & proven on Arc testnet ✅** · autonomous
-agents ⏳ · dashboard wired to live chain reads ⏳.
+animated dashboard ✅ · deployed & proven on Arc testnet ✅ · **autonomous
+buyer + worker agents settling on-chain ✅** · dashboard wired to live chain
+reads ⏳.
