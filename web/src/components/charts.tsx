@@ -1,11 +1,14 @@
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import type { PoolPoint } from "../data/types";
 import { fmtUsd } from "../lib/format";
 
 /** Single-series marks: one hue, 2px line, recessive grid — per the viz method. */
 
 export function Spark({ data, width = 118, height = 34 }: { data: number[]; width?: number; height?: number }) {
+  // ids must be unique per instance — a fixed id silently breaks the gradient
+  // on the second chart, since duplicate DOM ids resolve to the first match
+  const gradId = `sparkFill-${useId()}`;
   if (data.length < 2) return null;
   const min = Math.min(...data);
   const max = Math.max(...data);
@@ -20,12 +23,12 @@ export function Spark({ data, width = 118, height = 34 }: { data: number[]; widt
   return (
     <svg width={width} height={height} aria-hidden="true">
       <defs>
-        <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.24" />
           <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill="url(#sparkFill)" />
+      <path d={area} fill={`url(#${gradId})`} />
       <path d={line} fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -40,6 +43,7 @@ const hhmm = (t: number) => new Date(t).toLocaleTimeString([], { hour: "2-digit"
 export function AreaChart({ points, label }: { points: PoolPoint[]; label: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<number | null>(null);
+  const gradId = `areaFill-${useId()}`;
 
   if (points.length < 2) return null;
   const values = points.map((p) => p.assets);
@@ -77,7 +81,7 @@ export function AreaChart({ points, label }: { points: PoolPoint[]; label: strin
     <div className="chart-wrap" ref={wrapRef} onMouseMove={onMove} onMouseLeave={() => setHover(null)}>
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} style={{ display: "block" }}>
         <defs>
-          <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.22" />
             <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
           </linearGradient>
@@ -93,7 +97,7 @@ export function AreaChart({ points, label }: { points: PoolPoint[]; label: strin
             strokeWidth="1"
           />
         ))}
-        <motion.path d={area} fill="url(#areaFill)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, delay: 0.35 }} />
+        <motion.path d={area} fill={`url(#${gradId})`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, delay: 0.35 }} />
         <motion.path
           d={line}
           fill="none"
