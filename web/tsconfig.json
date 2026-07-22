@@ -12,7 +12,13 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      // mirrors the Vite alias — the dashboard and the buyer agent share one
+      // underwriting module, so neither can drift from the other
+      "@bonded/underwriting": ["../agents/src/underwriting.ts"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "../agents/src/underwriting.ts"]
 }

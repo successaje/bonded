@@ -1,11 +1,14 @@
 import { motion, MotionConfig } from "framer-motion";
 import { useRef, useState } from "react";
+import { addresses, addressUrl } from "./lib/chain";
 import { Agents } from "./views/Agents";
 import { Jobs } from "./views/Jobs";
 import { Overview } from "./views/Overview";
 import { Pool } from "./views/Pool";
+import { Proof } from "./views/Proof";
 
 const TABS = [
+  { id: "proof", label: "Proof" },
   { id: "overview", label: "Overview" },
   { id: "agents", label: "Agents" },
   { id: "jobs", label: "Jobs" },
@@ -24,7 +27,7 @@ function Logo() {
 }
 
 export default function App() {
-  const [tab, setTab] = useState<TabId>("overview");
+  const [tab, setTab] = useState<TabId>("proof");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   /** Arrow-key navigation between tabs, per the WAI-ARIA tabs pattern. */
@@ -74,9 +77,24 @@ export default function App() {
             <span className="pill">
               <span className="live-dot" /> Arc Testnet
             </span>
-            <span className="pill muted" title="Live chain reads land with the testnet deployment">
-              Simulated preview
-            </span>
+            {/* say exactly what the visible screen is showing — Proof reads the
+                real deployment, the operational views still run the simulation */}
+            {tab === "proof" ? (
+              <a
+                className="pill"
+                href={addressUrl(addresses.jobEscrow)}
+                target="_blank"
+                rel="noreferrer"
+                title="Every contract is source-verified on ArcScan"
+                style={{ textDecoration: "none" }}
+              >
+                Verified on-chain ↗
+              </a>
+            ) : (
+              <span className="pill muted" title="This view runs a simulation of the protocol economics">
+                Simulated preview
+              </span>
+            )}
           </div>
         </header>
 
@@ -90,6 +108,7 @@ export default function App() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
+          {tab === "proof" && <Proof />}
           {tab === "overview" && <Overview onNavigate={(t) => setTab(t as TabId)} />}
           {tab === "agents" && <Agents />}
           {tab === "jobs" && <Jobs />}

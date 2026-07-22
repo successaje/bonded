@@ -1,8 +1,9 @@
 /** Amounts are micro-USDC (1_000_000 = $1), matching the 6-decimal ERC-20 view on Arc. */
 export const USDC = 1_000_000;
 
-export function fmtUsd(micro: number, opts: { compact?: boolean; cents?: boolean } = {}): string {
-  const dollars = micro / USDC;
+/** Accepts bigint straight from chain reads as well as simulated numbers. */
+export function fmtUsd(micro: number | bigint, opts: { compact?: boolean; cents?: boolean } = {}): string {
+  const dollars = Number(micro) / USDC;
   if (opts.compact && dollars >= 1000) {
     return `$${dollars.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
   }

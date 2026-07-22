@@ -142,6 +142,6 @@ same USDC pool seen at 18 decimals — never add the two views.
 
 Built for **Build on Arc** (Encode × Circle, July–Aug 2026), entering both
 tracks: Agentic Economy and DeFi. Status: contracts + full test suite ✅ ·
-animated dashboard ✅ · deployed & proven on Arc testnet ✅ · **autonomous
-buyer + worker agents settling on-chain ✅** · dashboard wired to live chain
-reads ⏳.
+deployed, verified & proven on Arc testnet ✅ · autonomous buyer + worker
+agents settling on-chain ✅ · **dashboard reading the live deployment ✅** ·
+3-minute video + deck ⏳.

@@ -3,7 +3,7 @@
  * can never drift from the contracts. Run after any contract change:
  *   npm run gen:abis
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -36,5 +36,11 @@ const erc20 = [
 ];
 src += `export const erc20Abi = ${JSON.stringify(erc20)} as const;\n`;
 
-writeFileSync(join(root, "src", "abis.ts"), src);
-console.log(`wrote src/abis.ts — ${Object.values(EXPORTS).join(", ")}, erc20Abi`);
+// Both the agents and the dashboard read the same deployment, so both get
+// the same generated ABIs — neither can drift from what is on chain.
+const targets = [join(root, "src", "abis.ts"), join(root, "..", "web", "src", "lib", "abis.ts")];
+for (const t of targets) {
+  mkdirSync(dirname(t), { recursive: true });
+  writeFileSync(t, src);
+  console.log(`wrote ${t.replace(join(root, ".."), ".")}`);
+}

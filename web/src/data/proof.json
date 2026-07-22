@@ -1,0 +1,189 @@
+{
+  "chainId": 5042002,
+  "blockNumber": "53083221",
+  "generatedAt": "2026-07-22T12:35:20.910Z",
+  "settlements": [
+    {
+      "jobId": "4",
+      "passed": false,
+      "primary": "800000",
+      "secondary": "500000",
+      "price": "800000",
+      "agent": "0x18fEd7FABbfBe80f271A0943f0c8b2ba1f4CfB6e",
+      "agentName": "SwiftAudit",
+      "buyer": "0xB141478a27Ed60cFF71E2A5DE7B1b95BDC66210C",
+      "txHash": "0x47e13e5db7b98d94587f1d27c4f54f4e0e12ee1ee5b69293d49f2bce3a0fbd5d",
+      "blockNumber": "52988961"
+    },
+    {
+      "jobId": "3",
+      "passed": true,
+      "primary": "980000",
+      "secondary": "20000",
+      "price": "1000000",
+      "agent": "0x3390bdF83c4bc5A5fd7c410fb24430843E6E62F4",
+      "agentName": "Leak",
+      "buyer": "0xB141478a27Ed60cFF71E2A5DE7B1b95BDC66210C",
+      "txHash": "0x888a1db84da68eeb0afbe733c37533f3bef22ede0d46c47103809c9dc233a3c3",
+      "blockNumber": "52982013"
+    },
+    {
+      "jobId": "2",
+      "passed": false,
+      "primary": "1000000",
+      "secondary": "500000",
+      "price": "1000000",
+      "agent": "0x60eF148485C2a5119fa52CA13c52E9fd98F28e87",
+      "agentName": "Leak (bootstrap offer)",
+      "buyer": "0x60eF148485C2a5119fa52CA13c52E9fd98F28e87",
+      "txHash": "0x6492b0b808741024bb2b74021d01d042a380de33fce0f700fcda40d83c657e1f",
+      "blockNumber": "52945908"
+    },
+    {
+      "jobId": "1",
+      "passed": true,
+      "primary": "980000",
+      "secondary": "20000",
+      "price": "1000000",
+      "agent": "0x60eF148485C2a5119fa52CA13c52E9fd98F28e87",
+      "agentName": "Leak (bootstrap offer)",
+      "buyer": "0x60eF148485C2a5119fa52CA13c52E9fd98F28e87",
+      "txHash": "0x4484d2eefdccbe87e9df1e3580c6555fe8371665eaa549e4f1d0ab924088a2d9",
+      "blockNumber": "52945774"
+    }
+  ],
+  "candidates": [
+    {
+      "offer": {
+        "offerId": "1",
+        "agent": "0x60eF148485C2a5119fa52CA13c52E9fd98F28e87",
+        "price": "1000000",
+        "bondSlice": "500000",
+        "premium": "20000",
+        "deliveryWindow": 3600,
+        "disputeWindow": 0,
+        "checker": "0x7CC324d15E5fF17c43188fB63b462B9a79dA68f6",
+        "criteriaHash": "0xb82b3f67d54001020d9adf1782acc87d07ec188244ec664c20da82ea7bb65392",
+        "uri": "ipfs://bonded-sla-audit-v1",
+        "active": false
+      },
+      "stats": {
+        "staked": "4500000",
+        "locked": "0",
+        "available": "4500000",
+        "jobs": 2,
+        "passed": 1,
+        "failed": 1,
+        "volumePaid": "980000",
+        "volumeSlashed": "500000"
+      },
+      "label": "Leak (bootstrap offer)"
+    },
+    {
+      "offer": {
+        "offerId": "2",
+        "agent": "0x3390bdF83c4bc5A5fd7c410fb24430843E6E62F4",
+        "price": "1000000",
+        "bondSlice": "500000",
+        "premium": "20000",
+        "deliveryWindow": 900,
+        "disputeWindow": 0,
+        "checker": "0x7CC324d15E5fF17c43188fB63b462B9a79dA68f6",
+        "criteriaHash": "0xb82b3f67d54001020d9adf1782acc87d07ec188244ec664c20da82ea7bb65392",
+        "uri": "bonded://sla/leak/v1",
+        "active": true
+      },
+      "stats": {
+        "staked": "3000000",
+        "locked": "0",
+        "available": "3000000",
+        "jobs": 1,
+        "passed": 1,
+        "failed": 0,
+        "volumePaid": "980000",
+        "volumeSlashed": "0"
+      },
+      "label": "Leak"
+    },
+    {
+      "offer": {
+        "offerId": "3",
+        "agent": "0x18fEd7FABbfBe80f271A0943f0c8b2ba1f4CfB6e",
+        "price": "800000",
+        "bondSlice": "120000",
+        "premium": "16000",
+        "deliveryWindow": 900,
+        "disputeWindow": 0,
+        "checker": "0x7CC324d15E5fF17c43188fB63b462B9a79dA68f6",
+        "criteriaHash": "0xb82b3f67d54001020d9adf1782acc87d07ec188244ec664c20da82ea7bb65392",
+        "uri": "bonded://sla/swift/v1",
+        "active": false
+      },
+      "stats": {
+        "staked": "400000",
+        "locked": "0",
+        "available": "400000",
+        "jobs": 1,
+        "passed": 0,
+        "failed": 1,
+        "volumePaid": "0",
+        "volumeSlashed": "500000"
+      },
+      "label": "SwiftAudit"
+    },
+    {
+      "offer": {
+        "offerId": "4",
+        "agent": "0x7Fa350DB254Fb9Fe8FebCf92560aec683D2a30E7",
+        "price": "600000",
+        "bondSlice": "60000",
+        "premium": "12000",
+        "deliveryWindow": 900,
+        "disputeWindow": 0,
+        "checker": "0x7CC324d15E5fF17c43188fB63b462B9a79dA68f6",
+        "criteriaHash": "0xb82b3f67d54001020d9adf1782acc87d07ec188244ec664c20da82ea7bb65392",
+        "uri": "bonded://sla/flaky/v1",
+        "active": true
+      },
+      "stats": {
+        "staked": "600000",
+        "locked": "0",
+        "available": "600000",
+        "jobs": 0,
+        "passed": 0,
+        "failed": 0,
+        "volumePaid": "0",
+        "volumeSlashed": "0"
+      },
+      "label": "FlakyLabs"
+    },
+    {
+      "offer": {
+        "offerId": "5",
+        "agent": "0x18fEd7FABbfBe80f271A0943f0c8b2ba1f4CfB6e",
+        "price": "800000",
+        "bondSlice": "500000",
+        "premium": "16000",
+        "deliveryWindow": 900,
+        "disputeWindow": 0,
+        "checker": "0x7CC324d15E5fF17c43188fB63b462B9a79dA68f6",
+        "criteriaHash": "0xb82b3f67d54001020d9adf1782acc87d07ec188244ec664c20da82ea7bb65392",
+        "uri": "bonded://sla/swift/v1",
+        "active": true
+      },
+      "stats": {
+        "staked": "400000",
+        "locked": "0",
+        "available": "400000",
+        "jobs": 1,
+        "passed": 0,
+        "failed": 1,
+        "volumePaid": "0",
+        "volumeSlashed": "500000"
+      },
+      "label": "SwiftAudit"
+    }
+  ],
+  "poolAssets": "40000",
+  "totalBonded": "8500000"
+}

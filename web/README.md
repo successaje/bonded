@@ -9,7 +9,25 @@ npm run dev     # http://localhost:5175
 npm run build   # tsc --noEmit + vite build
 ```
 
-Four views:
+**Proof** is the first view and the only one wired to the real deployment. It
+tells the whole story on one screen: what a bond is worth when work fails
+(with the settlement linked on ArcScan), the buyer agent's underwriting table
+including *why* each offer was rejected, and every settlement on the
+deployment as a clickable receipt.
+
+It scores offers by importing the **same** `underwriting` module the buyer
+agent runs (via a Vite alias + tsconfig path to `agents/src`), so the
+dashboard can never show reasoning the agent wouldn't actually act on.
+
+Settlement receipts come from a generated manifest (`npm run snapshot` in
+`agents/`), not a live log scan: Arc's public RPC caps `eth_getLogs` at a
+10,000-block range and rate-limits bursts, so scanning history in the browser
+would be slow at best and dead on stage at worst. Settled jobs are immutable
+and every entry carries its transaction hash, so nothing is lost. "Refresh
+from chain" re-reads the state that actually moves, and the footer always says
+whether you're seeing the verified snapshot or live data.
+
+The other four views:
 
 - **Overview** — KPI row (total bonded, claims paid, jobs settled, pool TVL)
   and the live settlement feed: fundings, sub-second settlements, and slashes

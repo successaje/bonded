@@ -10,7 +10,8 @@
     "buyer": "tsx src/cli/buyer.ts",
     "worker": "tsx src/cli/worker.ts",
     "test": "tsx --test src/**/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "snapshot": "tsx src/cli/snapshot.ts"
   },
   "dependencies": {
     "viem": "^2.21.54"
