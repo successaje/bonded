@@ -1,6 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { forwardRef } from "react";
+import { navigate } from "../app/useHashRoute";
 import { Countdown } from "../components/Countdown";
+import { PageHead, SubTabs } from "../components/page";
 import { Avatar, agentTone, EmptyState, StateBadge } from "../components/ui";
 import { useWorld } from "../data/source";
 import type { Agent, Job } from "../data/types";
@@ -73,27 +75,49 @@ const JobCard = forwardRef<HTMLDivElement, { job: Job; agent: Agent }>(function 
   );
 });
 
-function Column({
-  title,
-  icon,
-  jobs,
-  agents,
-  empty,
-}: {
-  title: string;
-  icon: string;
-  jobs: Job[];
-  agents: Map<string, Agent>;
-  empty: { title: string; sub: string };
-}) {
+const FILTERS = ["active", "pending", "completed", "failed"] as const;
+type Filter = (typeof FILTERS)[number];
+
+const match: Record<Filter, (j: Job) => boolean> = {
+  active: (j) => j.state === "funded",
+  pending: (j) => j.state === "delivered" || j.state === "disputed",
+  completed: (j) => j.state === "passed",
+  failed: (j) => j.state === "failed",
+};
+
+const EMPTY: Record<Filter, { title: string; sub: string }> = {
+  active: { title: "No jobs in flight", sub: "New hires land here first" },
+  pending: { title: "Nothing awaiting review", sub: "Delivered work waits out its window here" },
+  completed: { title: "No completed jobs yet", sub: "Passed settlements land here" },
+  failed: { title: "No failed jobs", sub: "Slashes — where the bond makes the buyer whole — land here" },
+};
+
+export function Jobs({ filter }: { filter?: string }) {
+  const world = useWorld();
+  const agents = new Map(world.agents.map((a) => [a.id, a]));
+  const active: Filter = (FILTERS as readonly string[]).includes(filter ?? "") ? (filter as Filter) : "active";
+
+  const counts = Object.fromEntries(FILTERS.map((f) => [f, world.jobs.filter(match[f]).length])) as Record<Filter, number>;
+  const jobs = world.jobs
+    .filter(match[active])
+    .sort((a, b) => (b.settledAt ?? b.fundedAt) - (a.settledAt ?? a.fundedAt));
+
   return (
     <div>
-      <div className="col-title">
-        <span aria-hidden="true">{icon}</span> {title} <span className="col-count">{jobs.length}</span>
-      </div>
-      <motion.div className="job-col" layout>
+      <PageHead
+        eyebrow="Jobs"
+        title="Live job board"
+        sub="A running simulation of the protocol's job flow. Real settled jobs, linkable to ArcScan, live on Proof."
+      />
+      <SubTabs
+        items={FILTERS.map((f) => ({ id: f, label: f[0].toUpperCase() + f.slice(1), count: counts[f] }))}
+        active={active}
+        onChange={(id) => navigate(`#/jobs/${id}`)}
+      />
+
+      <motion.div className="job-list" layout>
         {jobs.length === 0 ? (
-          <EmptyState icon={icon} title={empty.title} sub={empty.sub} />
+          <EmptyState icon="◷" title={EMPTY[active].title} sub={EMPTY[active].sub} />
         ) : (
           <AnimatePresence initial={false} mode="popLayout">
             {jobs.map((j) => {
@@ -103,26 +127,6 @@ function Column({
           </AnimatePresence>
         )}
       </motion.div>
-    </div>
-  );
-}
-
-export function Jobs() {
-  const world = useWorld();
-  const agents = new Map(world.agents.map((a) => [a.id, a]));
-
-  const funded = world.jobs.filter((j) => j.state === "funded");
-  const awaiting = world.jobs.filter((j) => j.state === "delivered" || j.state === "disputed");
-  const settled = world.jobs
-    .filter((j) => j.state === "passed" || j.state === "failed")
-    .sort((a, b) => (b.settledAt ?? 0) - (a.settledAt ?? 0))
-    .slice(0, 6);
-
-  return (
-    <div className="jobs-board">
-      <Column title="In progress" icon="◷" jobs={funded} agents={agents} empty={{ title: "No jobs in flight", sub: "New hires appear here first" }} />
-      <Column title="Acceptance" icon="◔" jobs={awaiting} agents={agents} empty={{ title: "Nothing awaiting review", sub: "Delivered work waits out its window here" }} />
-      <Column title="Settled" icon="⚡" jobs={settled} agents={agents} empty={{ title: "No settlements yet", sub: "Passed and slashed jobs land here" }} />
     </div>
   );
 }

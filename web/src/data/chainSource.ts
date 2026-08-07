@@ -33,6 +33,48 @@ export interface ChainSnapshot {
   fetchedAt: number;
 }
 
+export interface Reputation {
+  address: Address;
+  name: string;
+  staked: bigint;
+  locked: bigint;
+  available: bigint;
+  jobs: number;
+  passed: number;
+  failed: number;
+  volumePaid: bigint;
+  volumeSlashed: bigint;
+}
+
+/** Live reputation for any address — the Reputation Explorer's lookup. */
+export async function readReputation(address: Address): Promise<Reputation> {
+  const read = async <T>(addr: Address, abi: unknown, fn: string) =>
+    (await withRetry(() =>
+      publicClient.readContract({ address: addr, abi: abi as never, functionName: fn, args: [address] }),
+    )) as T;
+
+  const staked = await read<bigint>(addresses.bondVault, bondVaultAbi, "staked");
+  const locked = await read<bigint>(addresses.bondVault, bondVaultAbi, "locked");
+  const available = await read<bigint>(addresses.bondVault, bondVaultAbi, "availableBond");
+  const r = await read<{ jobs: bigint; passed: bigint; failed: bigint; volumePaid: bigint; volumeSlashed: bigint }>(
+    addresses.outcomeLog,
+    outcomeLogAbi,
+    "trackRecord",
+  );
+  return {
+    address,
+    name: nameOf(address),
+    staked,
+    locked,
+    available,
+    jobs: Number(r.jobs),
+    passed: Number(r.passed),
+    failed: Number(r.failed),
+    volumePaid: r.volumePaid,
+    volumeSlashed: r.volumeSlashed,
+  };
+}
+
 async function loadMarketplace(): Promise<Candidate[]> {
   const next = (await withRetry(() =>
     publicClient.readContract({ address: addresses.slaRegistry, abi: slaRegistryAbi, functionName: "nextOfferId" }),

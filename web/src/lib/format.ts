@@ -38,3 +38,8 @@ export function shortAddr(a: string): string {
 export function clamp(x: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, x));
 }
+
+/** "SwiftAudit (challenger)" → "swiftaudit" — a stable route slug. */
+export function slug(name: string): string {
+  return name.toLowerCase().replace(/\(.*?\)/g, "").replace(/[^a-z0-9]/g, "").trim();
+}

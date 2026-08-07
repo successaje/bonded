@@ -17,6 +17,23 @@ export function agentTone(id: string): AvTone {
   return AGENT_TONE[id] ?? "blue";
 }
 
+const TONE_CYCLE: AvTone[] = ["blue", "violet", "teal", "amber"];
+/** Stable, distinct avatar color for an arbitrary seed (e.g. an address). */
+export function toneFor(seed: string): AvTone {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return TONE_CYCLE[h % TONE_CYCLE.length];
+}
+
+export function BondedMark({ size = 28 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" style={{ display: "block", flex: "none" }}>
+      <circle cx="16" cy="16" r="13" fill="none" stroke="var(--accent)" strokeWidth="2.6" />
+      <path d="M10.5 16.5l4 4 7.5-9.5" fill="none" stroke="var(--green)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function Badge({ tone, icon, children, glow }: { tone: Tone; icon?: string; children: ReactNode; glow?: boolean }) {
   return (
     <span className={`badge ${tone}${glow ? " bonded-badge" : ""}`}>
@@ -98,7 +115,9 @@ export function StatTile({
   );
 }
 
-export function BondBar({ staked, locked }: { staked: number; locked: number }) {
+export function BondBar({ staked: staked_, locked: locked_ }: { staked: number | bigint; locked: number | bigint }) {
+  const staked = Number(staked_);
+  const locked = Number(locked_);
   const available = Math.max(0, staked - locked);
   const lockedPct = staked > 0 ? (locked / staked) * 100 : 0;
   return (
