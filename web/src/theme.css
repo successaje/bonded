@@ -969,3 +969,48 @@ body {
 .jr-node.active .jr-meta span { opacity: 1; }
 @media (max-width: 1240px) { .jobrail { display: none; } }
 @media (prefers-reduced-motion: reduce) { .jr-fill { transition: none; } }
+
+/* ═══════════════════════════════════════════════════════════
+   ARC-STYLE ALTERNATING BANDS
+   A navy band re-scopes the theme vars locally, so every
+   component inside renders light-on-navy in BOTH global themes.
+   Paper sections keep the ambient theme → Arc's dark/light rhythm.
+   ═══════════════════════════════════════════════════════════ */
+.lp { overflow-x: clip; }
+.navy-band {
+  position: relative;
+  --bg: #0a1a38;
+  --panel: rgba(255, 255, 255, 0.055);
+  --panel-2: rgba(255, 255, 255, 0.04);
+  --hero: rgba(255, 255, 255, 0.045);
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --track: rgba(255, 255, 255, 0.13);
+  --text: #eff3fb;
+  --text-2: #bcc9e6;
+  --text-3: #8a9abe;
+  --text-4: #64749b;
+  --accent: #6ba6ef;
+  --accent-deep: #4b8fe4;
+  --accent-bg: rgba(107, 166, 239, 0.16);
+  --neutral-bg: rgba(255, 255, 255, 0.06);
+  --scrim: rgba(255, 255, 255, 0.14);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+  --shadow-lg: 0 40px 90px rgba(0, 0, 0, 0.52);
+  --card-blur: blur(8px);
+  color: var(--text);
+}
+.navy-band::before {
+  content: ""; position: absolute; top: 0; left: 50%; margin-left: -50vw;
+  transform: none; width: 100vw; height: 100%; z-index: 0;
+  background: linear-gradient(180deg, #081228 0%, #0a1c40 52%, #070f24 100%);
+}
+/* the hero's glow ::before is replaced by the navy band — neutralize it */
+.hero.navy-band::before { top: 0; width: 100vw; height: 100%; }
+.navy-band > * { position: relative; z-index: 1; }
+/* keep decorative absolute layers OUT of flow (the > * rule would clobber them) */
+.navy-band .hero-arcs, .navy-band .fc-arcs, .navy-band .fc-mesh { position: absolute; z-index: 0; }
+/* the kicker reads as the lighter accent on navy */
+.navy-band .kick { color: var(--accent); }
+/* pstat gradient text needs to be light on navy */
+.navy-band .pstat-v { background: linear-gradient(120deg, #ffffff, #b9c8e8); -webkit-background-clip: text; background-clip: text; color: transparent; }

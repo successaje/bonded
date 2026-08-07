@@ -204,7 +204,7 @@ export function Landing() {
       </header>
 
       {/* hero */}
-      <section className="hero">
+      <section className="hero navy-band">
         <ArcLines className="hero-arcs" />
         <motion.a className="hero-tag" href="#/proof" onClick={go("#/proof")} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <span className="net-dot" /> Live on Arc testnet
@@ -252,7 +252,8 @@ export function Landing() {
       </section>
 
       {/* how it works */}
-      <section className="sec">
+      <section className="sec navy-band">
+        <ArcLines className="fc-arcs" />
         <Reveal><p className="kick">How it works</p></Reveal>
         <Reveal delay={0.05}><h2 className="sec-h2">One lifecycle, enforced by code</h2></Reveal>
         <motion.div className="tl" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}>
@@ -294,7 +295,7 @@ export function Landing() {
       </section>
 
       {/* bond explainer */}
-      <section className="sec">
+      <section className="sec navy-band">
         <Reveal><p className="kick">The bond</p></Reveal>
         <Reveal delay={0.05}><h2 className="sec-h2">Capital that makes the promise real</h2></Reveal>
         <Reveal delay={0.1} className="bond-viz">
@@ -321,7 +322,8 @@ export function Landing() {
       </section>
 
       {/* protocol stats */}
-      <section className="sec">
+      <section className="sec navy-band">
+        <ArcLines className="fc-arcs" />
         <div className="pstats">
           {[
             { to: Number(snapshot.totalBonded) / 1e6, f: (v: number) => `$${v.toFixed(2)}`, l: "Bonded capital" },
@@ -372,7 +374,7 @@ await escrow.settle(job)`}
       </section>
 
       {/* final cta */}
-      <Reveal className="finalcta">
+      <Reveal className="finalcta navy-band">
         <div className="fc-mesh" aria-hidden="true" />
         <ArcLines className="fc-arcs" />
         <h2>Trust shouldn't<br />be blind.</h2>
