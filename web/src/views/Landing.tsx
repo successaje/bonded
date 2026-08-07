@@ -1,5 +1,5 @@
 import { DEFAULT_POLICY, rank } from "@bonded/underwriting";
-import { animate, AnimatePresence, motion, useInView, useReducedMotion, type Variants } from "framer-motion";
+import { animate, AnimatePresence, motion, useInView, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "../app/icons";
 import { ThemeToggle } from "../app/theme";
@@ -119,6 +119,50 @@ function Faq({ q, a }: { q: string; a: string }) {
 const stagger: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.09 } } };
 const rise: Variants = { hidden: { opacity: 0, y: 22 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } } };
 
+/* ── Arc-style concentric arc line-art (the Arc signature motif) ── */
+function ArcLines({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 800 600" fill="none" aria-hidden="true" preserveAspectRatio="xMaxYMid slice">
+      {[120, 200, 285, 375, 470, 570, 675].map((r, i) => (
+        <circle key={r} cx="760" cy="300" r={r} stroke="currentColor" strokeWidth="1" opacity={0.5 - i * 0.05} />
+      ))}
+    </svg>
+  );
+}
+
+/* ── one job, followed down the whole page ── */
+const STAGES = [
+  { k: "Funded", d: "escrow locked" },
+  { k: "Matched", d: "agent hired" },
+  { k: "Delivered", d: "work submitted" },
+  { k: "Verified", d: "checker ran" },
+  { k: "Recorded", d: "on the ledger" },
+];
+
+function JobRail() {
+  const { scrollYProgress } = useScroll();
+  const [stage, setStage] = useState(0);
+  const fill = useTransform(scrollYProgress, [0.04, 0.9], ["0%", "100%"]);
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const s = v < 0.16 ? 0 : v < 0.4 ? 1 : v < 0.58 ? 2 : v < 0.76 ? 3 : 4;
+    setStage(s);
+  });
+  return (
+    <div className="jobrail" aria-hidden="true">
+      <div className="jr-badge">Job #1</div>
+      <div className="jr-track">
+        <motion.div className="jr-fill" style={{ height: fill }} />
+        {STAGES.map((s, i) => (
+          <div key={s.k} className={`jr-node ${i <= stage ? "done" : ""} ${i === stage ? "active" : ""}`}>
+            <span className="jr-dot" />
+            <div className="jr-meta"><b>{s.k}</b><span>{s.d}</span></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Landing() {
   const { snapshot } = useChain();
   const agents = rank(snapshot.candidates.filter((c) => c.offer.active), DEFAULT_POLICY).slice(0, 3);
@@ -140,6 +184,7 @@ export function Landing() {
     <div className="lp">
       <div className="lp-mesh" aria-hidden="true"><span className="m1" /><span className="m2" /><span className="m3" /></div>
       <div className="lp-cursor" aria-hidden="true" />
+      <JobRail />
 
       {/* nav */}
       <header className={`lpn ${scrolled ? "scrolled" : ""}`}>
@@ -160,6 +205,7 @@ export function Landing() {
 
       {/* hero */}
       <section className="hero">
+        <ArcLines className="hero-arcs" />
         <motion.a className="hero-tag" href="#/proof" onClick={go("#/proof")} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <span className="net-dot" /> Live on Arc testnet
         </motion.a>
@@ -328,6 +374,7 @@ await escrow.settle(job)`}
       {/* final cta */}
       <Reveal className="finalcta">
         <div className="fc-mesh" aria-hidden="true" />
+        <ArcLines className="fc-arcs" />
         <h2>Trust shouldn't<br />be blind.</h2>
         <a className="btn lg green" href="#/dashboard" onClick={go("#/dashboard")}>Launch App <Icon.arrowRight width={17} height={17} /></a>
       </Reveal>

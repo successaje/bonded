@@ -935,3 +935,37 @@ body {
   .tl, .mprev, .rep-tiles, .lpf-cols { grid-template-columns: 1fr; }
   .demo-seg { width: 100%; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   ARC-INSPIRED: line-art motif, navy hero, job rail
+   ═══════════════════════════════════════════════════════════ */
+/* deeper navy glow behind the hero, Arc-style */
+.hero { position: relative; }
+.hero::before {
+  content: ""; position: absolute; left: 50%; top: -140px; transform: translateX(-50%);
+  width: 1100px; height: 620px; z-index: -1; pointer-events: none;
+  background: radial-gradient(620px 420px at 50% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 68%);
+}
+.hero-tag, .hero-h1, .hero-sub2, .hero-cta, .hero-demo { position: relative; z-index: 1; }
+
+/* concentric arc lines (the Arc signature) */
+.hero-arcs { position: absolute; top: -80px; right: -34%; width: 960px; height: 640px; z-index: 0; pointer-events: none; color: color-mix(in srgb, var(--accent) 34%, transparent); }
+.fc-arcs { position: absolute; top: -10%; right: -18%; width: 720px; height: 520px; color: color-mix(in srgb, var(--accent) 34%, transparent); }
+
+/* job rail — one job followed down the page */
+.jobrail { position: fixed; right: 26px; top: 50%; transform: translateY(-50%); z-index: 40; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.jr-badge { font-size: 10.5px; font-weight: 720; letter-spacing: 0.04em; color: var(--accent); background: var(--accent-bg); border: 1px solid var(--border); border-radius: 999px; padding: 4px 11px; backdrop-filter: var(--card-blur); }
+.jr-track { position: relative; display: flex; flex-direction: column; gap: 24px; padding: 2px 0; }
+.jr-track::before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px; background: var(--track); border-radius: 2px; }
+.jr-fill { position: absolute; left: 5px; top: 6px; width: 2px; background: linear-gradient(var(--green), color-mix(in srgb, var(--green) 70%, var(--accent))); border-radius: 2px; }
+.jr-node { position: relative; display: flex; align-items: center; gap: 11px; }
+.jr-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--panel); border: 2px solid var(--track); z-index: 1; flex: none; transition: all 0.3s ease; }
+.jr-node.done .jr-dot { border-color: var(--green); background: var(--green); }
+.jr-node.active .jr-dot { box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 22%, transparent); }
+.jr-meta b { display: block; font-size: 12px; font-weight: 640; color: var(--text-4); transition: color 0.3s ease; line-height: 1.15; }
+.jr-meta span { font-size: 10.5px; color: var(--text-4); opacity: 0; transition: opacity 0.3s ease; }
+.jr-node.done .jr-meta b { color: var(--text-2); }
+.jr-node.active .jr-meta b { color: var(--green); }
+.jr-node.active .jr-meta span { opacity: 1; }
+@media (max-width: 1240px) { .jobrail { display: none; } }
+@media (prefers-reduced-motion: reduce) { .jr-fill { transition: none; } }
