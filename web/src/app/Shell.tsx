@@ -4,7 +4,8 @@ import { Icon } from "./icons";
 import { NAV_BY_ID } from "./routes";
 import { Sidebar } from "./Sidebar";
 import { ThemeToggle } from "./theme";
-import { navigate, type Route } from "./useHashRoute";
+import type { Route } from "./useHashRoute";
+import { WalletButton } from "../wallet/WalletButton";
 
 /** App layout: fixed sidebar on desktop, slide-over drawer on mobile. */
 export function Shell({ route, children }: { route: Route; children: ReactNode }) {
@@ -53,12 +54,10 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
           </div>
           <div className="appbar-right">
             <ThemeToggle compact />
-            <span className="net-pill">
+            <span className="net-pill only-wide">
               <span className="net-dot" /> Arc Testnet
             </span>
-            <a className="btn sm" href="#/marketplace" onClick={(e) => { e.preventDefault(); navigate("#/marketplace"); }}>
-              Hire an agent
-            </a>
+            <WalletButton />
           </div>
         </header>
 

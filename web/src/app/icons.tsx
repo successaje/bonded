@@ -68,6 +68,18 @@ export const Icon = {
   spark: (p: SVGProps<SVGSVGElement>) => (
     <svg {...base(p)}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" /></svg>
   ),
+  wallet: (p: SVGProps<SVGSVGElement>) => (
+    <svg {...base(p)}><path d="M3 7a2 2 0 012-2h13a1 1 0 011 1v2" /><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M16 13.5h3M16 13.5a1.5 1.5 0 000 3h4v-3h-4z" /></svg>
+  ),
+  copy: (p: SVGProps<SVGSVGElement>) => (
+    <svg {...base(p)}><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3" /></svg>
+  ),
+  logout: (p: SVGProps<SVGSVGElement>) => (
+    <svg {...base(p)}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+  ),
+  alert: (p: SVGProps<SVGSVGElement>) => (
+    <svg {...base(p)}><path d="M12 9v4M12 17h.01" /><path d="M10.3 3.9L2.5 17a1.5 1.5 0 001.3 2.3h16.4a1.5 1.5 0 001.3-2.3L13.7 3.9a1.5 1.5 0 00-2.6 0z" /></svg>
+  ),
 };
 
 export type IconKey = keyof typeof Icon;

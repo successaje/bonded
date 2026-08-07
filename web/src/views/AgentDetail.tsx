@@ -1,11 +1,95 @@
 import { DEFAULT_POLICY, assess } from "@bonded/underwriting";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { navigate } from "../app/useHashRoute";
 import { PageHead } from "../components/page";
 import { Avatar, Badge, BondBar, BondedBadge, EmptyState, PassRing, toneFor } from "../components/ui";
 import { useChain } from "../data/useChain";
-import { addressUrl } from "../lib/chain";
+import { addressUrl, txUrl } from "../lib/chain";
 import { fmtUsd, pct, shortAddr, slug } from "../lib/format";
+import { useHire } from "../wallet/useHire";
+import { useWalletCtx } from "../wallet/WalletContext";
+import { fmtBalance } from "../wallet/useWallet";
+
+const STEP_LABEL: Record<string, string> = {
+  checking: "Checking balance…",
+  approving: "Approve USDC in your wallet…",
+  hiring: "Confirm hire in your wallet…",
+  watching: "Waiting for the checker to settle…",
+};
+
+function HirePanel({ offerId, price, bondSlice, premium, label }: { offerId: bigint; price: bigint; bondSlice: bigint; premium: bigint; label: string }) {
+  const w = useWalletCtx();
+  const hire = useHire(offerId, price);
+  const busy = hire.step !== "idle" && hire.step !== "passed" && hire.step !== "failed" && hire.step !== "error";
+
+  return (
+    <motion.div className="card hire-panel" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.1 }}>
+      <p className="eyebrow">Hire {label}</p>
+      <div className="hire-price">{fmtUsd(price)}</div>
+      <div className="hire-outcomes">
+        <div className="hire-out good">
+          <span className="hio-dot" />
+          <div><b>If it passes</b><span>agent paid {fmtUsd(price - premium)}, {fmtUsd(premium)} to the pool</span></div>
+        </div>
+        <div className="hire-out bad">
+          <span className="hio-dot" />
+          <div><b>If it fails</b><span>you're repaid {fmtUsd(price)} + {fmtUsd(bondSlice)} from the bond</span></div>
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {hire.step === "passed" && hire.result ? (
+          <motion.div key="passed" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="receipt">
+            <div className="receipt-row good"><span>Agent paid</span><span className="amount">+{fmtUsd(hire.result.primary)}</span></div>
+            <div className="receipt-row"><span>Premium to pool</span><span className="amount">+{fmtUsd(hire.result.secondary)}</span></div>
+            {hire.hireTx && <a className="footnote" style={{ display: "block", marginTop: 8 }} href={txUrl(hire.hireTx)} target="_blank" rel="noreferrer">View settlement on ArcScan ↗</a>}
+            <button className="btn ghost" style={{ width: "100%", marginTop: 12 }} onClick={hire.reset}>Hire again</button>
+          </motion.div>
+        ) : hire.step === "failed" && hire.result ? (
+          <motion.div key="failed" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="receipt">
+            <div className="receipt-row good"><span>You were refunded</span><span className="amount">+{fmtUsd(hire.result.primary)}</span></div>
+            <div className="receipt-row good"><span>Penalty from the bond</span><span className="amount">+{fmtUsd(hire.result.secondary)}</span></div>
+            {hire.hireTx && <a className="footnote" style={{ display: "block", marginTop: 8 }} href={txUrl(hire.hireTx)} target="_blank" rel="noreferrer">View settlement on ArcScan ↗</a>}
+            <button className="btn ghost" style={{ width: "100%", marginTop: 12 }} onClick={hire.reset}>Hire again</button>
+          </motion.div>
+        ) : (
+          <motion.div key="cta" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {w.status === "no-provider" ? (
+              <a className="btn" style={{ width: "100%" }} href="https://metamask.io/download" target="_blank" rel="noreferrer">Get a wallet to hire</a>
+            ) : w.status !== "connected" ? (
+              <button className="btn" style={{ width: "100%" }} onClick={() => void w.connect()} disabled={w.status === "connecting"}>
+                {w.status === "connecting" ? "Connecting…" : "Connect wallet to hire"}
+              </button>
+            ) : !w.onArc ? (
+              <button className="btn" style={{ width: "100%" }} onClick={() => void w.switchToArc()}>Switch to Arc Testnet</button>
+            ) : busy ? (
+              <button className="btn" style={{ width: "100%" }} disabled>
+                <span className="btn-spinner" /> {STEP_LABEL[hire.step]}
+              </button>
+            ) : (
+              <button className="btn" style={{ width: "100%" }} onClick={() => void hire.start()}>
+                Hire {label} — {fmtUsd(price)}
+              </button>
+            )}
+            {hire.step === "error" && hire.error && (
+              <div className="hire-error">
+                <span>{hire.error}</span>
+                <button className="linkish" onClick={hire.reset}>try again</button>
+              </div>
+            )}
+            {w.status === "connected" && w.onArc && w.usdcBalance != null && hire.step === "idle" && (
+              <p className="footnote" style={{ textAlign: "center" }}>Your balance: {fmtBalance(w.usdcBalance)}</p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <p className="footnote" style={{ textAlign: "center" }}>
+        The autonomous buyer agent already hires on-chain — see the <a href="#/proof" onClick={(e) => { e.preventDefault(); navigate("#/proof"); }}>Proof</a>.
+      </p>
+    </motion.div>
+  );
+}
 
 export function AgentDetail({ id }: { id: string }) {
   const { snapshot } = useChain();
@@ -85,26 +169,7 @@ export function AgentDetail({ id }: { id: string }) {
           )}
         </div>
 
-        <motion.div className="card hire-panel" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, delay: 0.1 }}>
-          <p className="eyebrow">Hire {label}</p>
-          <div className="hire-price">{fmtUsd(offer.price)}</div>
-          <div className="hire-outcomes">
-            <div className="hire-out good">
-              <span className="hio-dot" />
-              <div><b>If it passes</b><span>agent paid {fmtUsd(offer.price - offer.premium)}, {fmtUsd(offer.premium)} to the pool</span></div>
-            </div>
-            <div className="hire-out bad">
-              <span className="hio-dot" />
-              <div><b>If it fails</b><span>you're repaid {fmtUsd(offer.price)} + {fmtUsd(offer.bondSlice)} from the bond</span></div>
-            </div>
-          </div>
-          <button className="btn" style={{ width: "100%" }} disabled title="Wallet connect lands in the next build">
-            Connect wallet to hire
-          </button>
-          <p className="footnote" style={{ textAlign: "center" }}>
-            The autonomous buyer agent already hires on-chain — see the <a href="#/proof" onClick={(e) => { e.preventDefault(); navigate("#/proof"); }}>Proof</a>.
-          </p>
-        </motion.div>
+        <HirePanel offerId={offer.offerId} price={offer.price} bondSlice={offer.bondSlice} premium={offer.premium} label={label ?? "this agent"} />
       </div>
     </div>
   );

@@ -718,7 +718,9 @@ body {
   .agent-cols, .an-grid, .set-grid { grid-template-columns: 1fr; }
   .hire-panel { position: static; }
   .preview-grid { grid-template-columns: 1fr; }
-  .appbar-right .btn { display: none; }
+  .appbar-right .btn:not(.wallet-pill-wrap .btn) { display: none; }
+  .only-wide { display: none; }
+  .wp-bal { display: none; }
 }
 
 
@@ -1014,3 +1016,62 @@ body {
 .navy-band .kick { color: var(--accent); }
 /* pstat gradient text needs to be light on navy */
 .navy-band .pstat-v { background: linear-gradient(120deg, #ffffff, #b9c8e8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* ═══════════════════════════════════════════════════════════
+   WALLET
+   ═══════════════════════════════════════════════════════════ */
+.wallet-pill-wrap { position: relative; }
+.wallet-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: inherit; font-size: 12.5px; font-weight: 600; color: var(--text-2);
+  border: 1px solid var(--border-strong); border-radius: 999px;
+  padding: 6px 13px 6px 11px; background: var(--panel-2); cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+.wallet-pill:hover { border-color: var(--accent); background: var(--panel); }
+.wallet-pill.warn { border-color: var(--amber); color: var(--amber); }
+.wp-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex: none; }
+.wallet-pill.warn .wp-dot { background: var(--amber); }
+.wp-addr { font-variant-numeric: tabular-nums; }
+.wp-bal { color: var(--text-3); padding-left: 8px; border-left: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+
+.wallet-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 60;
+  width: 260px; border-radius: 14px; border: 1px solid var(--border-strong);
+  background: var(--panel); box-shadow: var(--shadow-lg); backdrop-filter: var(--card-blur);
+  padding: 6px; display: flex; flex-direction: column; gap: 2px;
+}
+.wm-row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 12px; border-radius: 9px; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: 13.5px; font-weight: 550; color: var(--text-2);
+  text-decoration: none; text-align: left;
+}
+.wm-row:hover { background: var(--neutral-bg); color: var(--text); }
+.wm-row.danger { color: var(--red); }
+.wm-row.danger:hover { background: var(--red-bg); }
+.wm-warn {
+  display: flex; align-items: flex-start; gap: 9px; padding: 11px 12px;
+  border-radius: 10px; background: var(--amber-bg); color: var(--amber);
+  margin-bottom: 4px; font-size: 12.5px;
+}
+.wm-warn b { display: block; font-size: 13px; }
+.wm-warn span { display: block; color: var(--text-3); font-weight: 500; margin-top: 2px; }
+.wm-warn .btn { margin-left: auto; flex: none; }
+
+/* ═══════════════════════════════════════════════════════════
+   HIRE FLOW
+   ═══════════════════════════════════════════════════════════ */
+.btn-spinner {
+  display: inline-block; width: 13px; height: 13px; margin-right: 2px;
+  border: 2px solid rgba(255, 255, 255, 0.35); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: -2px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.hire-error {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-top: 10px; padding: 10px 12px; border-radius: 10px;
+  background: var(--red-bg); color: var(--red); font-size: 12.5px; font-weight: 550;
+}
+.hire-error .linkish { color: var(--red); text-decoration: underline; }
+@media (prefers-reduced-motion: reduce) { .btn-spinner { animation-duration: 1.4s; } }

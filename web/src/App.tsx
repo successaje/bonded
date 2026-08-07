@@ -14,6 +14,7 @@ import { Pool } from "./views/Pool";
 import { Proof } from "./views/Proof";
 import { Reputation } from "./views/Reputation";
 import { Settings } from "./views/Settings";
+import { WalletProvider } from "./wallet/WalletContext";
 
 function routeView(section: string, sub?: string) {
   switch (section) {
@@ -49,11 +50,13 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-      {route.section === "landing" ? (
-        <Landing />
-      ) : (
-        <Shell route={route}>{routeView(route.section, route.sub)}</Shell>
-      )}
+      <WalletProvider>
+        {route.section === "landing" ? (
+          <Landing />
+        ) : (
+          <Shell route={route}>{routeView(route.section, route.sub)}</Shell>
+        )}
+      </WalletProvider>
     </MotionConfig>
   );
 }
