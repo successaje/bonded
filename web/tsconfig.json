@@ -15,10 +15,11 @@
     "types": ["vite/client"],
     "baseUrl": ".",
     "paths": {
-      // mirrors the Vite alias — the dashboard and the buyer agent share one
-      // underwriting module, so neither can drift from the other
-      "@bonded/underwriting": ["../agents/src/underwriting.ts"]
+      // mirrors the Vite alias → the committed copy at src/lib/underwriting.ts,
+      // regenerated from agents/ by `npm run gen:abis`. Self-contained so the
+      // build has no dependency on files outside web/.
+      "@bonded/underwriting": ["./src/lib/underwriting.ts"]
     }
   },
-  "include": ["src", "../agents/src/underwriting.ts"]
+  "include": ["src"]
 }

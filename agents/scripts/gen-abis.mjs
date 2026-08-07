@@ -44,3 +44,19 @@ for (const t of targets) {
   writeFileSync(t, src);
   console.log(`wrote ${t.replace(join(root, ".."), ".")}`);
 }
+
+// Mirror the shared underwriting model into the web app. The dashboard scores
+// offers with the exact model the buyer agent runs; committing a copy inside
+// web/ (rather than importing across packages) keeps the two in lockstep AND
+// lets the web build stand alone — it deploys from web/ as its own root on
+// Vercel with no dependency on ../agents. Edit agents/src/underwriting.ts; the
+// copy is regenerated here.
+const underwriting = readFileSync(join(root, "src", "underwriting.ts"), "utf8");
+const mirror =
+  "// AUTO-GENERATED mirror of agents/src/underwriting.ts — do not edit here.\n" +
+  "// Edit the original in agents/, then run: npm run gen:abis\n\n" +
+  underwriting;
+const mirrorPath = join(root, "..", "web", "src", "lib", "underwriting.ts");
+mkdirSync(dirname(mirrorPath), { recursive: true });
+writeFileSync(mirrorPath, mirror);
+console.log(`wrote ${mirrorPath.replace(join(root, ".."), ".")}`);
