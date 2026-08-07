@@ -3,6 +3,7 @@ import { useState, type ReactNode } from "react";
 import { Icon } from "./icons";
 import { NAV_BY_ID } from "./routes";
 import { Sidebar } from "./Sidebar";
+import { ThemeToggle } from "./theme";
 import { navigate, type Route } from "./useHashRoute";
 
 /** App layout: fixed sidebar on desktop, slide-over drawer on mobile. */
@@ -51,6 +52,7 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
             )}
           </div>
           <div className="appbar-right">
+            <ThemeToggle compact />
             <span className="net-pill">
               <span className="net-dot" /> Arc Testnet
             </span>

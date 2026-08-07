@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { BondedMark } from "../components/ui";
 import { Icon } from "./icons";
+import { ThemeToggle } from "./theme";
 import { NAV, type NavItem } from "./routes";
 import { navigate, type Route } from "./useHashRoute";
 
@@ -64,11 +65,16 @@ export function Sidebar({ route, onNavigate }: { route: Route; onNavigate: () =>
         ))}
       </nav>
 
-      <a className="sb-foot" href="https://testnet.arcscan.app/address/0x7dc16d44789283279b28C940359011F2649897dA?tab=contract" target="_blank" rel="noreferrer">
-        <span className="sb-dot" />
-        <span>Live on Arc testnet</span>
-        <Icon.external />
-      </a>
+      <div className="sb-bottom">
+        <div className="sb-toggle-row">
+          <ThemeToggle />
+        </div>
+        <a className="sb-foot" href="https://testnet.arcscan.app/address/0x7dc16d44789283279b28C940359011F2649897dA?tab=contract" target="_blank" rel="noreferrer">
+          <span className="sb-dot" />
+          <span>Live on Arc testnet</span>
+          <Icon.external />
+        </a>
+      </div>
     </div>
   );
 }
