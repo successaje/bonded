@@ -812,10 +812,18 @@ body {
 .dr-headline b { color: var(--green); }
 
 /* built on */
-.built { text-align: center; padding: 40px 24px; max-width: 900px; margin: 0 auto; }
+.built { text-align: center; padding: 44px 24px; max-width: 760px; margin: 0 auto; }
 .built-label { font-size: 11.5px; font-weight: 640; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-4); }
-.built-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 18px; }
-.built-chip { font-size: 14px; font-weight: 620; color: var(--text-2); border: 1px solid var(--border); border-radius: 11px; padding: 8px 18px; background: var(--panel-2); }
+.built-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 34px; margin-top: 24px; }
+.built-mark {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14.5px; font-weight: 620; letter-spacing: -0.01em;
+  color: var(--text-3); opacity: 0.72; cursor: default;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+.built-mark svg { flex: none; opacity: 0.85; }
+.built-mark:hover { color: var(--text); opacity: 1; }
+@media (max-width: 640px) { .built-row { gap: 20px 26px; } }
 
 /* generic section */
 .sec { max-width: 1080px; margin: 0 auto; padding: 96px 24px; }

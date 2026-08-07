@@ -22,6 +22,69 @@ function Reveal({ children, delay = 0, y = 28, className }: { children: ReactNod
   );
 }
 
+/* ── stack marks: simple line-marks in the same visual language as the rest
+   of the product (not brand pixel-art) — a "built with" bar, not a trademark
+   gallery. Circle/Arc/USDC/Foundry are nominative references; ERC-8004 is a
+   spec number, drawn as a spec tag rather than invented as a fake logo. ── */
+const StackIcon = {
+  circle: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <circle cx="9" cy="12" r="6.5" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="15" cy="12" r="6.5" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  ),
+  arc: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M4 18a10 10 0 0116 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M8 18a6 6 0 018 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="12" cy="18" r="1.4" fill="currentColor" />
+    </svg>
+  ),
+  usdc: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M12 7.5v9M9.5 9.8c0-1 1-1.8 2.5-1.8s2.5.7 2.5 1.7-1 1.4-2.5 1.7-2.5.8-2.5 1.8 1 1.7 2.5 1.7 2.5-.7 2.5-1.7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  erc: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M4 6a2 2 0 012-2h7l7 7-9 9-7-7V6z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" />
+    </svg>
+  ),
+  foundry: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M3 20h18M6 20l1.5-6h9L18 20" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 14l1.5-8h3L15 14" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="5" r="1.3" fill="currentColor" />
+    </svg>
+  ),
+};
+
+const STACK = [
+  { k: "circle" as const, label: "Circle" },
+  { k: "arc" as const, label: "Arc" },
+  { k: "usdc" as const, label: "USDC" },
+  { k: "erc" as const, label: "ERC-8004" },
+  { k: "foundry" as const, label: "Foundry" },
+];
+
+function StackMarks() {
+  return (
+    <div className="built-row">
+      {STACK.map((s) => {
+        const M = StackIcon[s.k];
+        return (
+          <motion.span key={s.k} className="built-mark" whileHover={{ y: -2, opacity: 1 }}>
+            <M />
+            <span>{s.label}</span>
+          </motion.span>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ── in-view counter ── */
 function Counter({ to, format }: { to: number; format: (v: number) => string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -228,7 +291,7 @@ export function Landing() {
       {/* built on */}
       <Reveal className="built" y={14}>
         <span className="built-label">Built on the open agent stack</span>
-        <div className="built-row">{["Circle", "Arc", "USDC", "ERC-8004", "Foundry"].map((t) => <span key={t} className="built-chip">{t}</span>)}</div>
+        <StackMarks />
       </Reveal>
 
       {/* problem */}
