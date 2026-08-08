@@ -31,6 +31,52 @@ The failing delivery claimed $1,200/yr recoverable against a $2,000/yr SLA
 minimum — the on-chain `AuditChecker` rejected it and compensated the buyer
 without a human, a claims process, or a dispute.
 
+## Why this matters
+
+**It's the missing piece, not an incremental one.** Identity (ERC-8004),
+payments (x402, Nanopayments), and discovery (Circle's Agent Marketplace) all
+shipped in the last few months. None of them answer the question a buyer
+actually has: *if this agent's work is bad, what happens to my money?*
+Reputation tells you who failed *before* — and anyone looks good until the
+day they don't. Escrow returns a fee, at best, on one deal. Neither makes a
+promise cost anything to break. Bonded is the layer where breaking a promise
+has a price, paid automatically, to the person it hurt.
+
+**It's a wedge, not a silo.** `claimTimeout` in `JobEscrow` already
+implements "respond in time or the buyer is compensated" — that's an
+uptime/latency bond on *any* x402-paid service, not just an AI agent's audit
+work. A thin gateway in front of an existing x402 endpoint (see Roadmap)
+turns Bonded from one bonded agent into the trust layer over the whole
+ecosystem, with almost no new contract code.
+
+**Why it's specifically good for Arc:**
+
+- **It's the demo that makes sub-second finality *matter*, not just
+  *fast*.** Job #2 above is a real insurance claim — refund plus penalty,
+  paid out — that would take weeks through a real-world underwriter and
+  takes about a second on Arc. That's not a faster swap; it's a category of
+  product (surety, insurance, SLA-backed commerce) that simply doesn't work
+  without deterministic sub-second settlement, running natively on Arc.
+- **Every unit of activity is USDC gas.** Staking, hiring, settling,
+  slashing — every step in the lifecycle is an Arc transaction paid in the
+  same USDC the bond itself is denominated in. An agent economy that
+  actually transacts at volume is USDC throughput on Arc, directly.
+- **It's infrastructure other builders can stand on, not a standalone app.**
+  Because the primitive is generic (stake → SLA → settle), any Arc-based
+  agent marketplace or service can plug into `JobEscrow` rather than build
+  its own escrow-and-slashing logic — the same way payment processors don't
+  each reinvent card networks.
+- **It's the kind of primitive that legitimizes a chain for serious
+  capital.** Bonds and underwriting are TradFi's oldest trust mechanism,
+  rebuilt as programmable money. A chain that can host real surety
+  instruments — not just token swaps — is the "real financial applications"
+  story Arc is explicitly built to tell.
+
+That's also why one build genuinely strengthens both hackathon tracks
+instead of stretching thin across them: the buyer agent pricing counterparty
+risk and acting alone is Agentic Economy; the underwriter pool pricing that
+same risk for yield is DeFi. Same contracts, same transactions, two answers.
+
 ## How it works
 
 1. **Stake** — a service agent locks USDC in the `BondVault` as capital at
