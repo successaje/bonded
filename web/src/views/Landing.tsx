@@ -1,5 +1,5 @@
 import { DEFAULT_POLICY, rank } from "@bonded/underwriting";
-import { animate, AnimatePresence, motion, useInView, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
+import { animate, AnimatePresence, motion, useInView, useReducedMotion, type Variants } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "../app/icons";
 import { ThemeToggle } from "../app/theme";
@@ -202,19 +202,67 @@ const STAGES = [
   { k: "Recorded", d: "on the ledger" },
 ];
 
+/**
+ * Follows one job down the page — but the stage it shows is driven by which
+ * *section* is actually on screen (via IntersectionObserver against the
+ * `data-stage` landmarks below), not a blind fraction of total scroll
+ * distance. A job "gets Matched" because you've scrolled to the section
+ * about hiring, not because you crossed some arbitrary 40% mark that might
+ * land mid-paragraph anywhere on the page.
+ */
 function JobRail() {
-  const { scrollYProgress } = useScroll();
   const [stage, setStage] = useState(0);
-  const fill = useTransform(scrollYProgress, [0.04, 0.9], ["0%", "100%"]);
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const s = v < 0.16 ? 0 : v < 0.4 ? 1 : v < 0.58 ? 2 : v < 0.76 ? 3 : 4;
-    setStage(s);
-  });
+
+  useEffect(() => {
+    let io: IntersectionObserver | undefined;
+    let cancelled = false;
+
+    const start = () => {
+      if (cancelled) return;
+      const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-stage]"));
+      if (targets.length === 0) return;
+      // Track membership explicitly and take the lowest active index rather
+      // than trusting iteration order — a callback batch can report more
+      // than one target intersecting at once (percentage rootMargin can
+      // resolve before layout is fully settled), and on that burst the
+      // lowest index still resolves correctly to the top-of-page stage.
+      const active = new Set<number>();
+      io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            const idx = Number((e.target as HTMLElement).dataset.stage);
+            if (e.isIntersecting) active.add(idx);
+            else active.delete(idx);
+          }
+          if (active.size > 0) setStage(Math.min(...active));
+        },
+        { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
+      );
+      targets.forEach((t) => io!.observe(t));
+    };
+
+    // Wait for web fonts before measuring — Inter Variable loading mid-mount
+    // shifts section heights, which can make an early scroller see the wrong
+    // stage for a moment while layout is still settling.
+    const fontsReady = document.fonts?.ready;
+    if (fontsReady) void fontsReady.then(start);
+    else start();
+
+    return () => {
+      cancelled = true;
+      io?.disconnect();
+    };
+  }, []);
+
   return (
     <div className="jobrail" aria-hidden="true">
-      <div className="jr-badge">Job #1</div>
+      <div className="jr-badge">One job, followed</div>
       <div className="jr-track">
-        <motion.div className="jr-fill" style={{ height: fill }} />
+        <motion.div
+          className="jr-fill"
+          animate={{ height: `${(stage / (STAGES.length - 1)) * 100}%` }}
+          transition={{ duration: 0.5, ease: EASE }}
+        />
         {STAGES.map((s, i) => (
           <div key={s.k} className={`jr-node ${i <= stage ? "done" : ""} ${i === stage ? "active" : ""}`}>
             <span className="jr-dot" />
@@ -267,7 +315,7 @@ export function Landing() {
       </header>
 
       {/* hero */}
-      <section className="hero navy-band">
+      <section className="hero navy-band" data-stage="0">
         <ArcLines className="hero-arcs" />
         <motion.a className="hero-tag" href="#/proof" onClick={go("#/proof")} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <span className="net-dot" /> Live on Arc testnet
@@ -315,7 +363,7 @@ export function Landing() {
       </section>
 
       {/* how it works */}
-      <section className="sec navy-band">
+      <section className="sec navy-band" data-stage="1">
         <ArcLines className="fc-arcs" />
         <Reveal><p className="kick">How it works</p></Reveal>
         <Reveal delay={0.05}><h2 className="sec-h2">One lifecycle, enforced by code</h2></Reveal>
@@ -331,7 +379,7 @@ export function Landing() {
       </section>
 
       {/* marketplace preview */}
-      <section className="sec">
+      <section className="sec" data-stage="2">
         <Reveal><p className="kick">Marketplace</p></Reveal>
         <Reveal delay={0.05}><h2 className="sec-h2">Agents that stake to earn your trust</h2></Reveal>
         <motion.div className="mprev" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}>
@@ -358,7 +406,7 @@ export function Landing() {
       </section>
 
       {/* bond explainer */}
-      <section className="sec navy-band">
+      <section className="sec navy-band" data-stage="3">
         <Reveal><p className="kick">The bond</p></Reveal>
         <Reveal delay={0.05}><h2 className="sec-h2">Capital that makes the promise real</h2></Reveal>
         <Reveal delay={0.1} className="bond-viz">
@@ -374,7 +422,7 @@ export function Landing() {
       </section>
 
       {/* reputation */}
-      <section className="sec center">
+      <section className="sec center" data-stage="4">
         <Reveal><h2 className="sec-h2">Reputation,<br />backed by money.</h2></Reveal>
         <Reveal delay={0.06}><p className="sec-lede">Not stars. A track record priced in USDC — bond size, pass rate, and every slash, portable across the agent economy.</p></Reveal>
         <motion.div className="rep-tiles" variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-60px" }}>
