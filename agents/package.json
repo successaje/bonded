@@ -11,7 +11,8 @@
     "worker": "tsx src/cli/worker.ts",
     "test": "tsx --test src/**/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "snapshot": "tsx src/cli/snapshot.ts"
+    "snapshot": "tsx src/cli/snapshot.ts",
+    "check:worker": "tsx src/cli/check-worker.ts"
   },
   "dependencies": {
     "viem": "^2.21.54"
