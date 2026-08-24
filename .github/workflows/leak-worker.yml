@@ -1,15 +1,20 @@
-name: Leak worker (persistent)
+name: Protocol worker (persistent)
 
 # Keeps Leak — the first bonded agent — actually watching Arc for work,
 # whether or not anyone's laptop is open. A job hired against Leak's offer
 # gets picked up and delivered within one run of this schedule, so the live
 # dashboard stays real: hire Leak any time, it settles on its own.
 #
-# GitHub Actions' cron granularity is 5 minutes, so this runs every 5 min in
-# --once mode (a single check-and-deliver pass, then exit) rather than the
-# long-lived daemon mode used for local dev. Leak's offer gives a 15-minute
-# delivery window, so a missed or delayed run still has 2-3 more chances
-# before a hire would time out.
+# Also sweeps ALL agents (not just Leak) for jobs that went overdue and were
+# never resolved — e.g. an agent that goes silent or misses its delivery
+# window. Nothing else in the pipeline claims those timeouts, so without
+# this a buyer's fee just sits locked in escrow forever. Found two stuck
+# like this from live testing (jobs #8, #9) before this job existed.
+#
+# GitHub Actions' cron granularity is 5 minutes, so both run in --once /
+# single-pass mode rather than the long-lived daemon mode used for local
+# dev. Leak's offer gives a 15-minute delivery window, so a missed or
+# delayed run still has 2-3 more chances before a hire would time out.
 
 on:
   schedule:
@@ -43,3 +48,26 @@ jobs:
           ARC_TESTNET_RPC_URL: ${{ secrets.ARC_TESTNET_RPC_URL }}
           WORKER_LEAK_KEY: ${{ secrets.WORKER_LEAK_KEY }}
         run: npm run worker -- leak --once
+
+  sweep-timeouts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: agents
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: agents/package-lock.json
+
+      - run: npm ci
+
+      - name: Resolve any overdue job, for any agent
+        env:
+          ARC_TESTNET_RPC_URL: ${{ secrets.ARC_TESTNET_RPC_URL }}
+          DEPLOYER_KEY: ${{ secrets.DEPLOYER_KEY }}
+        run: npm run claim-timeouts

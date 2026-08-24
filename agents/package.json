@@ -12,7 +12,8 @@
     "test": "tsx --test src/**/*.test.ts",
     "typecheck": "tsc --noEmit",
     "snapshot": "tsx src/cli/snapshot.ts",
-    "check:worker": "tsx src/cli/check-worker.ts"
+    "check:worker": "tsx src/cli/check-worker.ts",
+    "claim-timeouts": "tsx src/cli/claim-timeouts.ts"
   },
   "dependencies": {
     "viem": "^2.21.54"

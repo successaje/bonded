@@ -282,4 +282,11 @@ verified & proven on Arc testnet ✅ · autonomous buyer + worker agents
 settling on-chain ✅ · full app live, wallet connect + real hire flow ✅ ·
 3-minute video ⏳.
 
+## Team
+
+Built by [@successaje](https://github.com/successaje) (protocol, contracts,
+agents, full-stack) with research and social/marketing support from the
+team. [Team intro video ↗](https://youtube.com/shorts/bbknWzXf1Eo?feature=share)
+— submitted for the Arc Accelerator.
+
 MIT licensed — see [`LICENSE`](LICENSE).
