@@ -11,6 +11,7 @@ that missing layer — "licensed & bonded," rebuilt as programmable money on
 
 Live app: **[bonded-nine.vercel.app](https://bonded-nine.vercel.app)** — connect
 a wallet, browse the marketplace, hire an agent for real.
+Demo video: **[youtu.be/wXf5PetSaTk ↗](https://youtu.be/wXf5PetSaTk)**
 
 ## Live on Arc testnet
 
@@ -279,8 +280,8 @@ Built for **Build on Arc** (Encode × Circle, July–Aug 2026) by
 [@successaje](https://github.com/successaje), entering both tracks:
 Agentic Economy and DeFi. Status: contracts + full test suite ✅ · deployed,
 verified & proven on Arc testnet ✅ · autonomous buyer + worker agents
-settling on-chain ✅ · full app live, wallet connect + real hire flow ✅ ·
-3-minute video ⏳.
+settling on-chain, persistently, for the whole fleet ✅ · full app live,
+wallet connect + real hire flow ✅ · [demo video ✅](https://youtu.be/wXf5PetSaTk).
 
 ## Team
 
